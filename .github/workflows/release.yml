@@ -95,9 +95,10 @@ jobs:
     container: ${{ matrix.container }}
     timeout-minutes: 10
     steps:
-      - name: Tools the installer needs on Alpine
+      # bash and curl run the installer; the musl build links libstdc++ and libgcc.
+      - name: What Alpine needs
         if: matrix.container
-        run: apk add --no-cache bash curl
+        run: apk add --no-cache bash curl libstdc++ libgcc
       - name: Install with the published installer
         shell: sh
         run: |

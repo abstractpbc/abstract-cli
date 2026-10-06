@@ -79,15 +79,18 @@ release_base() {
 
 main() {
 	command -v curl >/dev/null 2>&1 || fail "curl is needed"
-	local target base file dir tmp expected actual
+	local target base file dir tmp staged expected actual version
 	target="$(platform)"
 	base="$(release_base)"
 	file="abstract-$target"
 	dir="${ABSTRACT_INSTALL_DIR:-$HOME/.local/bin}"
+	# The download is proven here, beside its destination, before it replaces anything.
+	# A temporary directory can be mounted noexec; the install directory cannot.
+	staged="$dir/.abstract-install.$$"
 
 	tmp="$(mktemp -d)"
-	# shellcheck disable=SC2064  # expand now: $tmp is local and gone when the trap runs
-	trap "rm -rf -- '$tmp'" EXIT
+	# shellcheck disable=SC2064  # expand now: both are local and gone when the trap runs
+	trap "rm -rf -- '$tmp' '$staged'" EXIT
 
 	printf 'Downloading %s/%s\n' "$base" "$file"
 	curl -fsSL "$base/$file" -o "$tmp/abstract" || fail "could not download $base/$file"
@@ -101,9 +104,14 @@ main() {
 		fail "checksum mismatch for $file: expected $expected, got $actual"
 
 	mkdir -p "$dir"
-	install -m 755 "$tmp/abstract" "$dir/abstract"
-	local version
-	version="$("$dir/abstract" --version)" || fail "$dir/abstract does not run on this machine"
+	install -m 755 "$tmp/abstract" "$staged"
+	if ! version="$("$staged" --version 2> /dev/null)"; then
+		case "$target" in
+			*-musl) fail "$file does not run here. On Alpine it needs two packages: apk add libstdc++ libgcc" ;;
+			*) fail "$file does not run on this machine" ;;
+		esac
+	fi
+	mv -f -- "$staged" "$dir/abstract"
 
 	printf '\nabstract %s is installed at %s\n' "$version" "$dir/abstract"
 	case ":$PATH:" in

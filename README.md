@@ -12,7 +12,8 @@ curl -fsSL https://github.com/abstractpbc/abstract-cli/releases/latest/download/
 The installer supports macOS and Linux on arm64 and x64. It downloads the binary for your
 machine, verifies its SHA-256 against the release's `checksums.txt`, and puts it in
 `~/.local/bin`. `ABSTRACT_INSTALL_DIR` names another directory, and `ABSTRACT_VERSION`
-installs one release, for example `0.1.0`.
+installs one release, for example `0.1.0`. On Alpine, install `libstdc++` and `libgcc`
+first.
 
 ## Sign in
 
