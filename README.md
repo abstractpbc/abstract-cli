@@ -6,7 +6,7 @@ API key on your machine, so a script or an agent can call the Abstract API.
 ## Install
 
 ```sh
-curl -fsSL https://github.com/abstractpbc/abstract-cli/releases/latest/download/install.sh | bash
+curl -fsSL https://abstract.inc/install.sh | bash
 ```
 
 The installer supports macOS and Linux on arm64 and x64. It downloads the binary for your
@@ -36,6 +36,18 @@ curl -H "Authorization: Bearer $(abstract token)" https://api.abstract.inc/v1/mo
 | `abstract status` | Shows the saved key and checks it against the API. |
 | `abstract logout` | Revokes the saved key and signs out. |
 | `abstract logout --local` | Removes the saved key from this machine only. |
+| `abstract skill` | Prints the skill that teaches an agent the Abstract API. |
+| `abstract skill install` | Saves that skill where your agents read skills. |
+
+## For an agent
+
+Paste this into Claude Code, Codex, Cursor, OpenCode or another agent with a terminal:
+
+> Set up Abstract for me. Run `curl -fsSL https://abstract.inc/install.sh | bash`, then
+> `abstract login`, and show me the link and code it prints. After I confirm, run
+> `abstract status`. Use `$(abstract token)` as the API key and never print it. Then run
+> `abstract skill install`, read the skill it installs, and follow it for every call to
+> the Abstract API.
 
 ## This repository
 
